@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slayer Studio's — Krishna Makkar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --ink: #14213D;
+    --accent: #B8863B;
+    --accent-soft: #F0E4CD;
+    --muted: #5B6472;
+    --line: rgba(20,33,61,0.12);
+    --shadow: rgba(20,33,61,0.08);
+    --status-color: #2E8B57;
+  }
+  [data-theme="dark"]{
+    --bg: #0E1420;
+    --surface: #161D2B;
+    --ink: #EDEFF3;
+    --accent: #D8AE5C;
+    --accent-soft: #2A2417;
+    --muted: #98A2B3;
+    --line: rgba(237,239,243,0.12);
+    --shadow: rgba(0,0,0,0.35);
+    --status-color: #D8AE5C;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Inter', sans-serif;
+    transition: background .3s ease, color .3s ease;
+    overflow-x:hidden;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:1140px; margin:0 auto; padding:0 28px; }
+  .serif{ font-family:'Newsreader', serif; }
+  h1,h2,h3{ font-family:'Newsreader', serif; font-weight:600; }
+
+  /* NAV */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--bg);
+    border-bottom:1px solid var(--line);
+  }
+  nav{ display:flex; align-items:center; justify-content:space-between; padding:20px 0; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:36px; height:36px; border-radius:8px;
+    background:var(--ink); color:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Newsreader', serif; font-weight:700; font-size:15px;
+  }
+  .brand-text{ font-size:16px; font-weight:700; letter-spacing:-0.01em; }
+  .brand-text span{ display:block; font-size:11px; font-weight:500; color:var(--muted); letter-spacing:0.04em; text-transform:uppercase; font-family:'Inter',sans-serif; }
+  .nav-links{ display:flex; gap:34px; font-size:14.5px; font-weight:500; color:var(--muted); }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-right{ display:flex; align-items:center; gap:14px; position:relative; }
+
+  /* theme toggle + press mee bubble */
+  .theme-toggle-wrap{ position:relative; }
+  .theme-btn{
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--line);
+    background:var(--surface); cursor:pointer; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink); transition:border-color .2s, transform .5s cubic-bezier(.65,0,.35,1);
+    position:relative; overflow:hidden;
+  }
+  .theme-btn:hover{ border-color:var(--accent); }
+  .theme-btn.spin{ transform:rotate(360deg); }
+  .theme-btn .icon{ display:inline-block; transition: transform .4s ease, opacity .3s ease; }
+
+  .press-mee{
+    position:absolute; top:52px; right:-6px;
+    background:var(--ink); color:var(--bg);
+    font-family:'Newsreader', serif; font-style:italic; font-weight:600;
+    font-size:13px; padding:7px 14px; border-radius:20px;
+    white-space:nowrap;
+    animation: bounceIn .5s ease .6s both, bounceLoop 1.4s ease-in-out 1.2s infinite;
+    box-shadow: 0 8px 20px -6px var(--shadow);
+    pointer-events:none;
+    z-index:5;
+  }
+  .press-mee::after{
+    content:''; position:absolute; top:-5px; right:16px;
+    width:10px; height:10px; background:var(--ink);
+    transform:rotate(45deg);
+  }
+  .press-mee.hide{ animation: fadeOutUp .4s ease forwards; }
+  @keyframes bounceIn{
+    0%{ opacity:0; transform:translateY(-10px) scale(.8); }
+    60%{ opacity:1; transform:translateY(3px) scale(1.05); }
+    100%{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  @keyframes bounceLoop{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-6px); }
+  }
+  @keyframes fadeOutUp{
+    to{ opacity:0; transform:translateY(-10px) scale(.85); }
+  }
+
+  .btn{
+    font-size:14px; font-weight:600; padding:11px 20px; border-radius:8px;
+    display:inline-flex; align-items:center; gap:6px;
+    transition: transform .15s, box-shadow .2s, opacity .2s;
+  }
+  .btn-primary{ background:var(--ink); color:var(--bg); }
+  .btn-primary:hover{ opacity:0.88; transform:translateY(-1px); }
+  .btn-outline{ border:1px solid var(--line); color:var(--ink); }
+  .btn-outline:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* theme wipe transition overlay */
+  .theme-wipe{
+    position:fixed; top:0; left:0; width:36px; height:36px;
+    border-radius:50%; transform:translate(-50%,-50%) scale(0);
+    z-index:9999; pointer-events:none;
+    transition: transform .65s cubic-bezier(.76,0,.24,1), opacity .35s ease .55s;
+  }
+  .theme-wipe.expand{ transform:translate(-50%,-50%) scale(70); }
+  .theme-wipe.fade-out{ opacity:0; }
+
+  /* profile fade swap */
+  .fade-swap{ transition: opacity .28s ease, transform .28s ease; }
+  .fade-swap.swapping{ opacity:0; transform:translateY(6px); }
+
+  /* HERO */
+  .hero{ padding:88px 0 90px; }
+  .hero-grid{ display:grid; grid-template-columns:1.25fr 0.9fr; gap:56px; align-items:center; }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600; color:var(--accent);
+    background:var(--accent-soft); padding:6px 12px; border-radius:20px;
+    margin-bottom:22px;
+  }
+  .kicker .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); }
+  .hero h1{ font-size:clamp(38px, 5vw, 54px); line-height:1.12; letter-spacing:-0.01em; }
+  .hero h1 em{ font-style:italic; color:var(--accent); }
+  .hero p.sub{ margin-top:22px; font-size:16.5px; line-height:1.7; color:var(--muted); max-width:480px; }
+  .hero-actions{ display:flex; gap:14px; margin-top:32px; flex-wrap:wrap; }
+  .hero-meta{ margin-top:40px; display:flex; gap:28px; font-size:13.5px; color:var(--muted); }
+  .hero-meta strong{ color:var(--ink); display:block; font-size:15px; font-family:'Newsreader',serif; }
+
+  /* info card */
+  .info-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:30px; box-shadow:0 20px 40px -20px var(--shadow);
+    position:relative;
+  }
+  .profile-avatar-row{ display:flex; align-items:center; gap:14px; padding-bottom:18px; margin-bottom:8px; border-bottom:1px solid var(--line); }
+  .profile-avatar{
+    width:52px; height:52px; border-radius:50%; flex-shrink:0;
+    background:var(--accent-soft); color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Newsreader',serif; font-weight:700; font-size:18px;
+    transition: transform .4s cubic-bezier(.65,0,.35,1);
+  }
+  .profile-avatar.pulse{ transform:scale(1.12) rotate(8deg); }
+  .profile-name{ font-family:'Newsreader',serif; font-weight:600; font-size:16.5px; }
+  .profile-tag{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .info-card .row{ display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--line); }
+  .info-card .row:last-child{ border-bottom:none; }
+  .info-card .row .label{ font-size:13px; color:var(--muted); }
+  .info-card .row .value{ font-size:14px; font-weight:600; text-align:right; }
+  .status-dot{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--status-color); }
+  .status-dot .d{ width:7px; height:7px; border-radius:50%; background:var(--status-color); }
+
+  /* SECTIONS */
+  section{ padding:76px 0; }
+  .section-top{ margin-bottom:46px; max-width:560px; }
+  .section-top .kicker{ margin-bottom:14px; }
+  .section-top h2{ font-size:clamp(28px,3.4vw,36px); }
+  .section-top p{ margin-top:12px; color:var(--muted); font-size:15.5px; line-height:1.6; }
+
+  .services{ background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .service-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+  .service-card{
+    background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:28px;
+    transition: border-color .2s, transform .2s;
+  }
+  .service-card:hover{ border-color:var(--accent); transform:translateY(-3px); }
+  .service-num{ font-family:'Newsreader',serif; font-style:italic; color:var(--accent); font-size:15px; margin-bottom:16px; }
+  .service-card h3{ font-size:20px; margin-bottom:10px; }
+  .service-card p{ font-size:14.5px; line-height:1.65; color:var(--muted); }
+
+  /* platforms */
+  .platform-list{ display:flex; flex-direction:column; gap:1px; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  .platform-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 26px; background:var(--surface);
+    transition: background .2s;
+  }
+  .platform-row:hover{ background:var(--accent-soft); }
+  .platform-left{ display:flex; align-items:center; gap:18px; }
+  .platform-icon{
+    width:44px; height:44px; border-radius:10px; background:var(--accent-soft); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  }
+  .platform-name{ font-weight:600; font-size:16px; }
+  .platform-handle{ font-size:13.5px; color:var(--muted); }
+  .platform-go{ font-size:13.5px; font-weight:600; color:var(--muted); }
+  .platform-row:hover .platform-go{ color:var(--accent); }
+
+  /* discord banner */
+  .discord-banner{
+    background:var(--ink); color:var(--bg);
+    border-radius:20px; padding:52px 48px;
+    display:flex; align-items:center; justify-content:space-between; gap:36px; flex-wrap:wrap;
+  }
+  .discord-banner h2{ color:var(--bg); font-size:clamp(26px,3.2vw,32px); }
+  .discord-banner p{ color:var(--bg); opacity:0.72; margin-top:10px; max-width:420px; font-size:15px; line-height:1.6; }
+  .discord-banner .btn-primary{ background:var(--accent); color:#14213D; flex-shrink:0; }
+
+  /* contact */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:50px; }
+  .contact-grid h2{ font-size:clamp(28px,3.4vw,36px); }
+  .contact-grid > div:first-child p{ margin-top:16px; color:var(--muted); font-size:15.5px; line-height:1.7; max-width:420px; }
+  .contact-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:8px; }
+  .contact-item{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid var(--line); }
+  .contact-item:last-child{ border-bottom:none; }
+  .contact-item .label{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); font-weight:600; }
+  .contact-item .value{ font-size:14.5px; font-weight:600; text-align:right; }
+  .contact-item a.value:hover{ color:var(--accent); }
+
+  footer{ border-top:1px solid var(--line); padding:36px 0; }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; }
+  .footer-row .made{ font-family:'Newsreader',serif; font-style:italic; color:var(--accent); font-size:14px; }
+  .footer-row .copy{ font-size:12.5px; color:var(--muted); }
+
+  @media (max-width: 860px){
+    .nav-links{ display:none; }
+    .hero-grid, .service-grid, .contact-grid{ grid-template-columns:1fr; }
+    .discord-banner{ padding:36px 28px; }
+    .press-mee{ right:-30px; font-size:12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .press-mee, .theme-wipe, .theme-btn, .profile-avatar, .fade-swap{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div class="brand-text">Slayer Studio's<span>Krishna Makkar</span></div>
+      </div>
+      <div class="nav-links">
+        <a href="#services">Services</a>
+        <a href="#platforms">Content</a>
+        <a href="#discord">Community</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-right">
+        <div class="theme-toggle-wrap">
+          <button class="theme-btn" id="themeToggle" aria-label="Toggle dark mode"><span class="icon" id="themeIcon">🌙</span></button>
+          <div class="press-mee" id="pressMee">Press Mee</div>
+        </div>
+        <a class="btn btn-primary" href="#contact">Hire Me</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker fade-swap" id="heroKicker"><span class="dot"></span>Available for freelance work</span>
+      <h1 class="fade-swap" id="heroHeading">Krishna Makkar — building brands as <em>@justslayer0</em></h1>
+      <p class="sub fade-swap" id="heroSub">Full-time student, part-time freelancer, and a content creator across YouTube, Instagram and Facebook — all under one handle. Here's where I'm at, and how to reach me.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Hire Me</a>
+        <a class="btn btn-outline" href="#platforms">See My Work</a>
+      </div>
+      <div class="hero-meta fade-swap" id="heroMeta">
+        <div><strong>3</strong>Active roles</div>
+        <div><strong>Saharanpur, UP</strong>Based in India</div>
+        <div><strong>@justslayer0</strong>Every platform</div>
+      </div>
+    </div>
+    <div class="info-card fade-swap" id="infoCard">
+      <div class="profile-avatar-row">
+        <div class="profile-avatar" id="profileAvatar">KM</div>
+        <div>
+          <div class="profile-name" id="profileName">Krishna Makkar</div>
+          <div class="profile-tag" id="profileTag">Student & Freelancer</div>
+        </div>
+      </div>
+      <div class="row"><span class="label">Status</span><span class="status-dot" id="rowStatus"><span class="d"></span>Open to work</span></div>
+      <div class="row"><span class="label">Role</span><span class="value" id="rowRole">Freelancer · Student · Creator</span></div>
+      <div class="row"><span class="label">Location</span><span class="value" id="rowLocation">Saharanpur, India</span></div>
+      <div class="row"><span class="label" id="rowExtraLabel">Discord</span><span class="value" id="rowExtraValue">slayer061155</span></div>
+      <div class="row"><span class="label" id="rowContactLabel">Email</span><span class="value" id="rowContactValue">krishnamakkar58@gmail.com</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="section-top">
+      <span class="kicker"><span class="dot"></span>Right now</span>
+      <h2>What I'm juggling</h2>
+      <p>Three lanes, one person — here's the honest split of where my time actually goes.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-card">
+        <div class="service-num">01</div>
+        <h3>Freelancing</h3>
+        <p>Taking on freelance projects on the side. Open to new work — tell me what you need and I'll tell you if I'm the right fit.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">02</div>
+        <h3>School</h3>
+        <p>Still a full-time student. Classes and assignments come first, everything else is built around that schedule.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-num">03</div>
+        <h3>Content Creation</h3>
+        <p>Posting on YouTube, Instagram and Facebook under one handle. New content goes up whenever it's actually ready.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="platforms">
+  <div class="wrap">
+    <div class="section-top">
+      <span class="kicker"><span class="dot"></span>Watch / follow</span>
+      <h2>Find me, one handle everywhere</h2>
+    </div>
+    <div class="platform-list">
+      <a class="platform-row" href="#" target="_blank" rel="noopener">
+        <div class="platform-left">
+          <div class="platform-icon">YT</div>
+          <div><div class="platform-name">YouTube</div><div class="platform-handle">@justslayer0</div></div>
+        </div>
+        <span class="platform-go">Watch →</span>
+      </a>
+      <a class="platform-row" href="#" target="_blank" rel="noopener">
+        <div class="platform-left">
+          <div class="platform-icon">IG</div>
+          <div><div class="platform-name">Instagram</div><div class="platform-handle">@justslayer0</div></div>
+        </div>
+        <span class="platform-go">Follow →</span>
+      </a>
+      <a class="platform-row" href="#" target="_blank" rel="noopener">
+        <div class="platform-left">
+          <div class="platform-icon">FB</div>
+          <div><div class="platform-name">Facebook</div><div class="platform-handle">@justslayer0</div></div>
+        </div>
+        <span class="platform-go">Follow →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="discord">
+  <div class="wrap">
+    <div class="discord-banner">
+      <div>
+        <h2>Come hang out in the Discord</h2>
+        <p>Updates land here before anywhere else — plus early looks at content and real conversation instead of just posting at people.</p>
+      </div>
+      <a class="btn btn-primary" href="https://discord.gg/Ge7Rnfeq85" target="_blank" rel="noopener">Join the server →</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div>
+      <span class="kicker"><span class="dot"></span>Hire me</span>
+      <h2>Got a project? Let's talk.</h2>
+      <p>DM me on Discord or send an email — whichever's easier. I'm based in Saharanpur, Uttar Pradesh, India, and happy to work with people anywhere.</p>
+    </div>
+    <div class="contact-card">
+      <div class="contact-item"><span class="label">Discord</span><span class="value">slayer061155 — DM me</span></div>
+      <div class="contact-item"><span class="label">Email</span><a class="value" href="mailto:krishnamakkar58@gmail.com">krishnamakkar58@gmail.com</a></div>
+      <div class="contact-item"><span class="label">Location</span><span class="value">Saharanpur, UP, India</span></div>
+      <div class="contact-item"><span class="label">Community</span><a class="value" href="https://discord.gg/Ge7Rnfeq85" target="_blank" rel="noopener">Join the Discord →</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <span class="copy">© 2026 Slayer Studio's — Krishna Makkar (@justslayer0)</span>
+    <span class="made">made with no sleep</span>
+  </div>
+</footer>
+
+<script>
+  // ---- Profile data for the two personas ----
+  const profiles = {
+    light: {
+      kickerText: 'Available for freelance work',
+      headingHTML: 'Krishna Makkar — building brands as <em>@justslayer0</em>',
+      sub: "Full-time student, part-time freelancer, and a content creator across YouTube, Instagram and Facebook — all under one handle. Here's where I'm at, and how to reach me.",
+      meta: [
+        { num: '3', label: 'Active roles' },
+        { num: 'Saharanpur, UP', label: 'Based in India' },
+        { num: '@justslayer0', label: 'Every platform' }
+      ],
+      avatar: 'KM',
+      name: 'Krishna Makkar',
+      tag: 'Student & Freelancer',
+      status: 'Open to work',
+      role: 'Freelancer · Student · Creator',
+      location: 'Saharanpur, India',
+      extraLabel: 'Discord',
+      extraValue: 'slayer061155',
+      contactLabel: 'Email',
+      contactValue: 'krishnamakkar58@gmail.com'
+    },
+    dark: {
+      kickerText: 'New drops every week',
+      headingHTML: 'Just Slayer — the creator behind <em>@justslayer0</em>',
+      sub: "Same person, different lens: gaming clips, vlogs and behind-the-scenes across YouTube, Instagram and Facebook. This is the after-hours side of the desk.",
+      meta: [
+        { num: '3', label: 'Active platforms' },
+        { num: '1', label: 'Discord community' },
+        { num: 'Weekly', label: 'Upload schedule' }
+      ],
+      avatar: 'JS',
+      name: 'Just Slayer',
+      tag: 'Content Creator',
+      status: 'Posting weekly',
+      role: 'Creator · Editor · Community lead',
+      location: 'Saharanpur, India',
+      extraLabel: 'Community',
+      extraValue: 'Join the Discord',
+      contactLabel: 'Business',
+      contactValue: 'krishnamakkar58@gmail.com'
+    }
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const fadeEls = () => [$('heroKicker'), $('heroHeading'), $('heroSub'), $('heroMeta'), $('infoCard')];
+
+  function paintProfile(theme){
+    const p = profiles[theme];
+    $('heroKicker').innerHTML = '<span class="dot"></span>' + p.kickerText;
+    $('heroHeading').innerHTML = p.headingHTML;
+    $('heroSub').textContent = p.sub;
+    $('heroMeta').innerHTML = p.meta.map(m => `<div><strong>${m.num}</strong>${m.label}</div>`).join('');
+    $('profileAvatar').textContent = p.avatar;
+    $('profileName').textContent = p.name;
+    $('profileTag').textContent = p.tag;
+    $('rowStatus').innerHTML = '<span class="d"></span>' + p.status;
+    $('rowRole').textContent = p.role;
+    $('rowLocation').textContent = p.location;
+    $('rowExtraLabel').textContent = p.extraLabel;
+    $('rowExtraValue').textContent = p.extraValue;
+    $('rowContactLabel').textContent = p.contactLabel;
+    $('rowContactValue').textContent = p.contactValue;
+  }
+
+  function swapProfileWithFade(theme){
+    const els = fadeEls();
+    els.forEach(el => el.classList.add('swapping'));
+    const avatar = $('profileAvatar');
+    avatar.classList.add('pulse');
+    setTimeout(() => {
+      paintProfile(theme);
+      els.forEach(el => el.classList.remove('swapping'));
+      setTimeout(() => avatar.classList.remove('pulse'), 300);
+    }, 220);
+  }
+
+  // ---- Theme toggle with circular wipe transition ----
+  const btn = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+  const pressMee = document.getElementById('pressMee');
+  let hasToggled = false;
+
+  btn.addEventListener('click', (e) => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const goingDark = !isDark;
+
+    // dismiss the "Press Mee" bubble after first interaction
+    if (!hasToggled){
+      hasToggled = true;
+      pressMee.classList.add('hide');
+      setTimeout(() => pressMee.remove(), 450);
+    }
+
+    // spin the icon button
+    btn.classList.add('spin');
+    setTimeout(() => btn.classList.remove('spin'), 500);
+
+    // circular wipe overlay, expanding from the button
+    const rect = btn.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const overlay = document.createElement('div');
+    overlay.className = 'theme-wipe';
+    overlay.style.left = x + 'px';
+    overlay.style.top = y + 'px';
+    overlay.style.background = goingDark ? '#0E1420' : '#F7F6F2';
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => overlay.classList.add('expand'));
+
+    setTimeout(() => {
+      document.documentElement.setAttribute('data-theme', goingDark ? 'dark' : 'light');
+      icon.textContent = goingDark ? '☀️' : '🌙';
+      swapProfileWithFade(goingDark ? 'dark' : 'light');
+    }, 320);
+
+    setTimeout(() => overlay.classList.add('fade-out'), 520);
+    setTimeout(() => overlay.remove(), 950);
+  });
+
+  // paint the initial (light) profile explicitly on load
+  paintProfile('light');
+</script>
+
+</body>
+</html>
